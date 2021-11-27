@@ -4,19 +4,31 @@ import Axios from "axios";
 export const Login = () => {
   const [username, setUser] = useState("");
   const [password, setPass] = useState("");
+  const [cinema,setCinema]=useState("");
 
   const onSubmit = async (event) => {
     event.preventDefault();
-     
-
+    
+    if (!username||!password){
+      console.log("campi vuoti")
+      return
+    }
+    console.log("sono nel submit")
     try {
       const result = await Axios.post("http://localhost:3001/", {
         username: username,
         password: password,
+      }).then((res)=>{
+        
+        if (res.data){
+          setCinema(res.data);
+        } else{
+          alert("password non corrispondente")
+        }
       });
-      console.log("axios result", result.config.data)
+      
     } catch (error) {
-      console.log("error", error);
+      console.log("error axios", error);
     }
   };
 
@@ -62,6 +74,7 @@ export const Login = () => {
             <div className="col-6">
               <p className="text-end mb-0 fs-6">dev by FC</p>
             </div>
+            <p>result {cinema}</p>
           </div>
         </div>
       </div>
