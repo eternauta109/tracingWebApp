@@ -5,4 +5,4 @@ const db={
     database:'tracingdb'
 };
 
-export default db;
+module.exports=db;

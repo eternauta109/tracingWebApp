@@ -3,6 +3,7 @@ import Accordion from './accordion';
 import Table from './table';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axios from "axios"
 
 export const Tracing = () => {
   /* const [codFisc, setCodFisc] = useState(''); */
@@ -14,7 +15,7 @@ export const Tracing = () => {
   const [counter, setCounter] = useState(0);
   const [registrer, setRegistrer] = useState([]);
 
-  const onSubmit = (event) => {
+  const onSubmit = async (event) => {
     event.preventDefault();
     console.log('onSubmit');
     /* setCodFisc(event.currentTarget.codFisc.value); */
@@ -22,13 +23,7 @@ export const Tracing = () => {
     console.log('ticket', ticket.current.value);
     console.log('nome e cognome', agregato.current.value);
     console.log('numero tel', number.current.value); */
-    const registration = {
-      fiscale: codFisc.current.value,
-      nameClient: agregato.current.value,
-      numberPhone: number.current.value,
-      ticket: ticket.current.value,
-      date: date,
-    };
+    
 
     if (
       !codFisc.current.value &&
@@ -50,7 +45,7 @@ export const Tracing = () => {
       return;
     }
     if (!ticket.current.value) {
-      toast.error('si deve inserire il numero del biglietto', {
+      toast.error('si deve inserire il codice biglietto', {
         position: 'bottom-right',
         autoClose: 5000,
         hideProgressBar: false,
@@ -61,12 +56,44 @@ export const Tracing = () => {
       });
       return;
     }
+    try {
+      const result = await axios.post("http://localhost:3001/tracing", 
+      {       
+        
+          registration:{
+            fiscale: codFisc.current.value,
+            nameClient: agregato.current.value,
+            numberPhone: number.current.value,
+            ticket: ticket.current.value,
+            date: date
+          }
+          
+        
+      }).then((res)=>{        
+        if (res.data){
+          console.log(res.data);
+        } else{
+          alert("qualcosa è andato storto. Riprova")
+        }
+      }).catch(
+        console.log("cath della try axios")
+      );
+      
+    } catch (error) {
+      console.log("error axios tracing", error);
+    }
 
     setCounter(counter + 1);
 
-    console.log('registration', registration);
+   
     let newArrya = [...registrer];
-    newArrya[counter] = registration;
+    newArrya[counter] = {
+      fiscale: codFisc.current.value,
+      nameClient: agregato.current.value,
+      numberPhone: number.current.value,
+      ticket: ticket.current.value,
+      date: date
+    };
 
     setRegistrer(newArrya);
     if (counter === 2) {
@@ -75,8 +102,8 @@ export const Tracing = () => {
   };
 
   useEffect(() => {
-    console.log(registrer);
-  }, [registrer]);
+    
+  }, []);
 
   return (
     <div className="container-fluid">

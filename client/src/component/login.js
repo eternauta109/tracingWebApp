@@ -1,40 +1,51 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export const Login = () => {
-  const [username, setUser] = useState("");
-  const [password, setPass] = useState("");
-  const [cinema,setCinema]=useState("");
+  const username = useRef("");
+  const password = useRef("");
+  const [cinema, setCinema] = useState("");
+  const navigate = useNavigate();
 
   const onSubmit = async (event) => {
     event.preventDefault();
-    
-    if (!username||!password){
-      console.log("campi vuoti")
-      return
+
+    const user = username.current.value;
+    const pass = password.current.value;
+    console.log("login value nel submit", user, pass);
+
+    if (!username || !password) {
+      console.log("campi vuoti");
+      return;
     }
-    console.log("sono nel submit")
+
+    console.log("sono nel submit");
+
     try {
       const result = await Axios.post("http://localhost:3001/", {
-        username: username,
-        password: password,
-      }).then((res)=>{
-        
-        if (res.data){
-          setCinema(res.data);
-        } else{
-          alert("password non corrispondente")
-        }
-      });
-      
+        username: username.current.value,
+        password: password.current.value,
+      })
+        .then((res) => {
+          if (res.data) {
+            setCinema(res.data);
+            
+            return navigate("/tracing");
+          } else {
+            alert("username o password non corrispondente");
+            username.current.value = "";
+            password.current.value = "";
+            username.current.focus();
+          }
+        })
+        .catch(console.log("result"));
     } catch (error) {
       console.log("error axios", error);
     }
   };
 
-  useEffect(() => {
-    console.log("login", username, password);
-  });
+  useEffect(() => {});
 
   return (
     <div className="container-fluid">
@@ -50,7 +61,8 @@ export const Login = () => {
                   name="username"
                   className="form-control"
                   placeholder="Username"
-                  onChange={(event)=>setUser(event.currentTarget.value)}
+                  ref={username}
+                  /* onChange={(event)=>setUser(event.currentTarget.value)} */
                 />
               </div>
               <div className="col-12">
@@ -60,7 +72,8 @@ export const Login = () => {
                   name="password"
                   className="form-control"
                   placeholder="Password"
-                  onChange={(event)=>setPass(event.currentTarget.value)}
+                  ref={password}
+                  /* onChange={(event)=>password=event.current.value} */
                 />
               </div>
 
