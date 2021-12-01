@@ -2,10 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import Axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-export const Login = () => {
+
+export const Login = ({setCinema}) => {
   const username = useRef("");
   const password = useRef("");
-  const [cinema, setCinema] = useState("");
+  
   const navigate = useNavigate();
 
   const onSubmit = async (event) => {
@@ -28,24 +29,23 @@ export const Login = () => {
         password: password.current.value,
       })
         .then((res) => {
-          if (res.data) {
-            setCinema(res.data);
-            
-            return navigate("/tracing");
-          } else {
-            alert("username o password non corrispondente");
-            username.current.value = "";
-            password.current.value = "";
-            username.current.focus();
-          }
+          
+          setCinema(res.data);
+          return navigate("/tracing");
+
         })
-        .catch(console.log("result"));
+
     } catch (error) {
-      console.log("error axios", error);
+      username.current.focus();
+      username.current.value = "";
+      password.current.value = "";
+      console.log(error.response.data);
     }
   };
 
-  useEffect(() => {});
+  useEffect(() => {
+    
+  });
 
   return (
     <div className="container-fluid">
@@ -62,7 +62,7 @@ export const Login = () => {
                   className="form-control"
                   placeholder="Username"
                   ref={username}
-                  /* onChange={(event)=>setUser(event.currentTarget.value)} */
+                /* onChange={(event)=>setUser(event.currentTarget.value)} */
                 />
               </div>
               <div className="col-12">
@@ -73,7 +73,7 @@ export const Login = () => {
                   className="form-control"
                   placeholder="Password"
                   ref={password}
-                  /* onChange={(event)=>password=event.current.value} */
+                /* onChange={(event)=>password=event.current.value} */
                 />
               </div>
 
@@ -87,7 +87,7 @@ export const Login = () => {
             <div className="col-6">
               <p className="text-end mb-0 fs-6">dev by FC</p>
             </div>
-            <p>result {cinema}</p>
+       
           </div>
         </div>
       </div>
